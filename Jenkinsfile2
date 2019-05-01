@@ -1,0 +1,18 @@
+node('slave'){
+ stage ('Clean workspace'){
+     deleteDir()
+ }
+ stage ('Checkout repo'){
+checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '1767cf55-c263-4238-8c0c-55b5f1e4b3d3', url: 'git@github.com:frovai/teste-jenkins.git']]])
+ }
+ stage('Build'){
+     sh 'mvn clean package'
+ }
+ stage('Test'){
+     sh 'mvn test'
+ }
+ stage ('sonar scan'){
+        sh 'mvn clean install'
+        sh 'mvn sonar:sonar -Dsonar.host.url=http://localhost:9000 -Dsonar.host.login=0a6550b17456c57ebeed3e8b1059af5b0c0a989e -Dsonar.scm.disabled=true'
+    }
+}
